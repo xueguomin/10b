@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xgm.mapper.GoodsMapper">
+
+	<resultMap type="com.xgm.bean.Goods" id="goodsMap">
+		<id column="id" property="id"/>
+		<result  column="name" property="name"/>
+		<result  column="datea" property="datea"/>
+		<result  column="price" property="price"/>
+		<result  column="status" property="status"/>
+		<result  column="typeid" property="type.tid"/>
+		<result  column="typename" property="type.tname"/>
+		<!-- <association property="type" javaType="com.whd.bean.Type">
+			<id column="tid" property="tid"/>
+			<result  column="tname" property="tname"/>
+		</association> -->
+	</resultMap>
+
+	<select id="queryGoods" resultMap="goodsMap" parameterType="map">
+		select g.id,g.name,g.datea,g.status,g.price,t.tid as typeid,t.tname as typename 
+		from t_goods g,t_type t where g.tid = t.tid and g.status = 0
+		<if test="name!=null and name!=''">
+			and g.name like concat('%',#{name},'%')
+		</if>
+	</select>
+	<select id="queryType" resultType="com.xgm.bean.Type">
+		select * from t_type
+	</select>
+	<insert id="addGoods" parameterType="com.xgm.bean.Goods">
+		insert into t_goods(id,name,price,tid,datea,status)values(#{id},#{name},#{price},#{type.tid},now(),#{status})
+	</insert>
+	<update id="deleteGoods">
+		update t_goods set status=1 where id in (${id})
+	</update>
+	<select id="queryGoodsById" resultMap="goodsMap" parameterType="int">
+		select * from t_goods where id = #{id}
+	</select>
+</mapper>
